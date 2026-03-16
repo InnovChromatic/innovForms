@@ -1,0 +1,335 @@
+/**
+ * =============================================================================
+ * Admin Module Styles — Light Professional Theme
+ * =============================================================================
+ */
+
+/* ---- Form Cards ---- */
+.formCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg);
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.formCard:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.formCardTitle {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.formCardDesc {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.formCardMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--space-xs);
+}
+
+.formCardActions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-light);
+}
+
+/* ---- Form Builder ---- */
+.builderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.builderCanvas {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg);
+}
+
+.builderSidebar {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg);
+  position: sticky;
+  top: var(--space-lg);
+}
+
+/* Floating Action Button for Form Builder */
+.fabContainer {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  z-index: 1000;
+}
+
+.fabMenu {
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+.fabContainer.fabOpen .fabMenu {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fabItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform var(--transition-fast);
+}
+
+.fabItem:hover {
+  transform: scale(1.05);
+}
+
+.fabItemLabel {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  white-space: nowrap;
+}
+
+.fabItemIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition-fast);
+}
+
+.fabItem:hover .fabItemIcon {
+  background: var(--accent-light);
+}
+
+.fabMain {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-base);
+}
+
+.fabMain:hover {
+  box-shadow: var(--shadow-xl);
+  transform: scale(1.05);
+}
+
+.fabMain.fabOpen {
+  transform: rotate(45deg);
+}
+
+/* Field items in canvas */
+.fieldItem {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-xs);
+  background: var(--color-gray-50);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.fieldItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fieldItem:hover {
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
+}
+
+.fieldItem.selected {
+  background: white;
+  border-color: var(--accent-primary);
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.12);
+  cursor: default;
+}
+
+.fieldItemInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  overflow: hidden;
+}
+
+.fieldItemType {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  background: var(--accent-light);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.fieldItemLabel {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fieldItemActions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* Field editor inline */
+.fieldInlineEditor {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.fieldInlineEditor h4 {
+  margin-bottom: var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Toggle */
+.toggleWrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) 0;
+}
+
+.toggleLabel {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  border: none;
+  background: var(--color-gray-300);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--transition-fast);
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
+}
+
+.toggle.active {
+  background: var(--accent-primary);
+}
+
+.toggle.active::after {
+  transform: translateX(18px);
+}
+
+/* ---- Response Detail ---- */
+.responseField {
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.responseField:last-child {
+  border-bottom: none;
+}
+
+.responseFieldLabel {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+
+.responseFieldValue {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  /* removed grid */
+}
+
+@media (max-width: 768px) {
+  .fieldTypeGrid {
+    grid-template-columns: 1fr;
+  }
+}
