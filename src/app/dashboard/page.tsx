@@ -88,7 +88,7 @@ export default async function DashboardPage() {
 
       <div className="grid-2">
         {/* Recent Submissions */}
-        <div className="card" style={{ padding: "var(--space-lg)" }}>
+        <div className="card truncate-text" style={{ padding: "var(--space-lg)" }}>
           <div className="flex items-center justify-between mb-lg">
             <h3 style={{ fontSize: "var(--text-base)" }}>Recent Submissions</h3>
             <Link href="/dashboard/submissions" className="btn btn-ghost btn-sm">
@@ -97,30 +97,37 @@ export default async function DashboardPage() {
           </div>
 
           {submissions && submissions.length > 0 ? (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Form</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submissions.map((sub) => (
-                  <tr key={sub.id}>
-                    <td style={{ fontWeight: 500, color: "var(--text-primary)" }}>
-                      {(sub.forms as unknown as { title: string } | null)?.title || "Unknown"}
-                    </td>
-                    <td>
-                      <span className={`badge badge-${sub.status === "submitted" ? "info" : sub.status === "approved" ? "success" : sub.status === "reviewed" ? "warning" : "error"}`}>
-                        {sub.status}
-                      </span>
-                    </td>
-                    <td>{new Date(sub.submitted_at).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="flex flex-col gap-sm">
+              {submissions.map((sub) => (
+                <Link
+                  key={sub.id}
+                  href={`/dashboard/submissions/${sub.id}`}
+                  style={{
+                    display: "block",
+                    padding: "var(--space-md)",
+                    background: "var(--color-gray-50)",
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--border-light)",
+                    transition: "all 0.2s ease",
+                    textDecoration: "none",
+                  }}
+                >
+                  <div className="flex items-start justify-between">
+                    <div style={{ flex: 1, minWidth: 0, marginRight: "var(--space-md)" }}>
+                      <div className="truncate-text" style={{ fontWeight: 600, color: "var(--text-primary)", marginBottom: 4, fontSize: "var(--text-sm)" }}>
+                        {(sub.forms as unknown as { title: string } | null)?.title || "Unknown Form"}
+                      </div>
+                      <div className="truncate-text" style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>
+                        {new Date(sub.submitted_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                    {/* <span className={`badge badge-${sub.status === "submitted" ? "info" : sub.status === "approved" ? "success" : sub.status === "reviewed" ? "warning" : "error"}`}>
+                      {sub.status}
+                    </span> */}
+                  </div>
+                </Link>
+              ))}
+            </div>
           ) : (
             <div className="empty-state" style={{ padding: "var(--space-xl)" }}>
               <p>No submissions yet. Fill out a form to get started!</p>

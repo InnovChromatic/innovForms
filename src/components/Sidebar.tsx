@@ -13,6 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
 import {
   faGauge,
   faFileLines,
@@ -71,13 +72,15 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
   return (
     <>
       {/* Mobile toggle button */}
-      <button
-        className={styles.mobileToggle}
-        onClick={() => setMobileOpen(!mobileOpen)}
-        aria-label="Toggle navigation"
-      >
-        <FontAwesomeIcon icon={mobileOpen ? faXmark : faBars} />
-      </button>
+      {!mobileOpen && (
+        <button
+          className={styles.mobileToggle}
+          onClick={() => setMobileOpen(true)}
+          aria-label="Toggle navigation"
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+      )}
 
       {/* Overlay for mobile */}
       {mobileOpen && (
@@ -91,7 +94,7 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
       <aside className={`${styles.sidebar} ${mobileOpen ? styles.open : ""}`}>
         {/* Brand */}
         <div className={styles.brand}>
-          <div className={styles.logo}>IF</div>
+          <Image src="/title_logo.jpg" alt="InnovForms Logo" width={32} height={32} style={{ borderRadius: "var(--radius-md)", objectFit: "cover", flexShrink: 0 }} />
           <span className={styles.brandText}>InnovForms</span>
         </div>
 

@@ -143,22 +143,17 @@ export default function FormResponsesPage({ params }: { params: Promise<{ id: st
           <table className="data-table" style={{ whiteSpace: "nowrap" }}>
             <thead>
               <tr>
-                <th style={{ width: 100 }}>Status</th>
                 <th style={{ width: 150 }}>Submitted</th>
                 {dataColumns.map(col => (
                   <th key={col.id} className="truncate-text" style={{ maxWidth: 200 }} title={col.label}>{col.label}</th>
                 ))}
+                <th style={{ width: 100 }}>Status</th>
                 <th style={{ position: "sticky", right: 0, background: "var(--bg-card)", boxShadow: "-2px 0 5px rgba(0,0,0,0.05)" }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedSubmissions.map((sub) => (
                 <tr key={sub.id}>
-                  <td>
-                    <span className={`badge badge-${sub.status === "submitted" ? "info" : sub.status === "approved" ? "success" : sub.status === "reviewed" ? "warning" : "error"}`}>
-                      {sub.status}
-                    </span>
-                  </td>
                   <td>{new Date(sub.submitted_at).toLocaleDateString()}</td>
                   {dataColumns.map(col => {
                     let val = sub.data[col.id];
@@ -169,6 +164,11 @@ export default function FormResponsesPage({ params }: { params: Promise<{ id: st
                       </td>
                     );
                   })}
+                  <td>
+                    <span className={`badge badge-${sub.status === "submitted" ? "info" : sub.status === "approved" ? "success" : sub.status === "reviewed" ? "warning" : "error"}`}>
+                      {sub.status}
+                    </span>
+                  </td>
                   <td style={{ position: "sticky", right: 0, background: "var(--bg-card)", boxShadow: "-2px 0 5px rgba(0,0,0,0.05)" }}>
                     <Link href={`/admin/responses/${sub.id}`} className="btn btn-ghost btn-sm">
                       <FontAwesomeIcon icon={faEye} /> View

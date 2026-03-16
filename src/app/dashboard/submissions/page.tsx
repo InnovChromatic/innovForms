@@ -12,8 +12,8 @@ import { createClient } from "@/lib/supabase/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
-  faEye,
   faClipboardList,
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Submission {
@@ -69,37 +69,45 @@ export default function SubmissionsPage() {
       </div>
 
       {filtered.length > 0 ? (
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Form</th>
-                <th>Status</th>
-                <th>Submitted</th>
-                <th style={{ width: 80 }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((sub) => (
-                <tr key={sub.id}>
-                  <td style={{ fontWeight: 500, color: "var(--text-primary)" }}>
-                    {(sub.forms as unknown as { title: string } | null)?.title || "Unknown"}
-                  </td>
-                  <td>
-                    <span className={`badge badge-${sub.status === "submitted" ? "info" : sub.status === "approved" ? "success" : sub.status === "reviewed" ? "warning" : "error"}`}>
-                      {sub.status}
-                    </span>
-                  </td>
-                  <td>{new Date(sub.submitted_at).toLocaleDateString()}</td>
-                  <td>
-                    <Link href={`/dashboard/submissions/${sub.id}`} className="btn btn-ghost btn-sm">
-                      <FontAwesomeIcon icon={faEye} /> View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex flex-col gap-sm truncate-text">
+          {filtered.map((sub) => (
+            <Link
+              key={sub.id}
+              href={`/dashboard/submissions/${sub.id}`}
+              style={{
+                display: "block",
+                padding: "var(--space-lg)",
+                background: "var(--bg-card)",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--border-light)",
+                boxShadow: "var(--shadow-sm)",
+                transition: "all 0.2s ease",
+                textDecoration: "none",
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div style={{ flex: 1, minWidth: 0, marginRight: "var(--space-md)" }}>
+                  <div className="truncate-text" style={{ fontWeight: 600, color: "var(--text-primary)", marginBottom: 6, fontSize: "var(--text-base)" }}>
+                    {(sub.forms as unknown as { title: string } | null)?.title || "Unknown Form"}
+                  </div>
+                  <div className="truncate-text" style={{ fontSize: "var(--text-sm)", color: "var(--text-tertiary)" }}>
+                    {new Date(sub.submitted_at).toLocaleDateString()}
+                  </div>
+                </div>
+                <div style={{ fontSize: "var(--text-xs)", color: "var(--accent-primary)", fontWeight: 600 }}>
+                    View <FontAwesomeIcon icon={faChevronRight} style={{ marginLeft: 2 }} />
+                  </div>
+                {/* <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px", flexShrink: 0 }}>
+                  <span className={`badge badge-${sub.status === "submitted" ? "info" : sub.status === "approved" ? "success" : sub.status === "reviewed" ? "warning" : "error"}`}>
+                    {sub.status}
+                  </span>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--accent-primary)", fontWeight: 600 }}>
+                    View <FontAwesomeIcon icon={faChevronRight} style={{ marginLeft: 2 }} />
+                  </div>
+                </div> */}
+       </div>
+            </Link>
+          ))}
         </div>
       ) : (
         <div className="card">

@@ -7,6 +7,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -53,7 +54,7 @@ function LoginForm() {
   return (
     <>
       <div className={styles.authHeader}>
-        <div className={styles.authLogo}>IF</div>
+        <Image src="/title_logo.jpg" alt="InnovForms Logo" width={80} height={80} style={{ borderRadius: "var(--radius-md)", objectFit: "cover", marginBottom: "var(--space-md)" }} />
         <h1>Welcome Back</h1>
         <p>Sign in to your InnovForms account</p>
       </div>

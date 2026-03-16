@@ -5,6 +5,7 @@
  */
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFileLines,
@@ -126,34 +127,41 @@ export default async function AdminDashboard() {
           <h3 style={{ marginBottom: "var(--space-lg)", fontSize: "var(--text-base)" }}>Recent Submissions</h3>
 
           {recentSubmissions && recentSubmissions.length > 0 ? (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Form</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentSubmissions.map((sub) => (
-                  <tr key={sub.id}>
-                    <td style={{ fontWeight: 500, color: "var(--text-primary)" }}>
-                      {(sub.forms as unknown as { title: string } | null)?.title || "Unknown"}
-                    </td>
-                    <td>
-                      <span className={`badge badge-${
-                        sub.status === "submitted" ? "info" :
-                        sub.status === "approved" ? "success" :
-                        sub.status === "reviewed" ? "warning" : "error"
-                      }`}>
-                        {sub.status}
-                      </span>
-                    </td>
-                    <td>{new Date(sub.submitted_at).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="flex flex-col gap-sm">
+              {recentSubmissions.map((sub) => (
+                <Link
+                  key={sub.id}
+                  href={`/admin/responses/${sub.id}`}
+                  style={{
+                    display: "block",
+                    padding: "var(--space-md)",
+                    background: "var(--color-gray-50)",
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--border-light)",
+                    transition: "all 0.2s ease",
+                    textDecoration: "none",
+                  }}
+                >
+                  <div className="flex items-start justify-between">
+                    <div style={{ flex: 1, minWidth: 0, marginRight: "var(--space-md)" }}>
+                      <div className="truncate-text" style={{ fontWeight: 600, color: "var(--text-primary)", marginBottom: 4, fontSize: "var(--text-sm)" }}>
+                        {(sub.forms as unknown as { title: string } | null)?.title || "Unknown Form"}
+                      </div>
+                      <div className="truncate-text" style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>
+                        {new Date(sub.submitted_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <span className={`badge badge-${
+                      sub.status === "submitted" ? "info" :
+                      sub.status === "approved" ? "success" :
+                      sub.status === "reviewed" ? "warning" : "error"
+                    }`}>
+                      {sub.status}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           ) : (
             <div className="empty-state" style={{ padding: "var(--space-xl)" }}>
               <p>No submissions yet</p>
@@ -166,33 +174,40 @@ export default async function AdminDashboard() {
           <h3 style={{ marginBottom: "var(--space-lg)", fontSize: "var(--text-base)" }}>Your Forms</h3>
 
           {forms && forms.length > 0 ? (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {forms.map((form) => (
-                  <tr key={form.id}>
-                    <td style={{ fontWeight: 500, color: "var(--text-primary)" }}>
-                      {form.title}
-                    </td>
-                    <td>
-                      <span className={`badge badge-${
-                        form.status === "published" ? "success" :
-                        form.status === "draft" ? "warning" : "error"
-                      }`}>
-                        {form.status}
-                      </span>
-                    </td>
-                    <td>{new Date(form.created_at).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="flex flex-col gap-sm">
+              {forms.map((form) => (
+                <Link
+                  key={form.id}
+                  href={`/admin/forms/${form.id}/edit`}
+                  style={{
+                    display: "block",
+                    padding: "var(--space-md)",
+                    background: "var(--color-gray-50)",
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--border-light)",
+                    transition: "all 0.2s ease",
+                    textDecoration: "none",
+                  }}
+                >
+                  <div className="flex items-start justify-between">
+                    <div style={{ flex: 1, minWidth: 0, marginRight: "var(--space-md)" }}>
+                      <div className="truncate-text" style={{ fontWeight: 600, color: "var(--text-primary)", marginBottom: 4, fontSize: "var(--text-sm)" }}>
+                        {form.title}
+                      </div>
+                      <div className="truncate-text" style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>
+                        {new Date(form.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <span className={`badge badge-${
+                      form.status === "published" ? "success" :
+                      form.status === "draft" ? "warning" : "error"
+                    }`}>
+                      {form.status}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           ) : (
             <div className="empty-state" style={{ padding: "var(--space-xl)" }}>
               <p>No forms created yet</p>

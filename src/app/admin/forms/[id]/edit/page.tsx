@@ -265,7 +265,7 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
       </div>
 
       {/* Floating Action Button */}
-      <div className={`${styles.fabContainer} ${fabOpen ? styles.fabOpen : ""}`}>
+      <div className={`${styles.fabContainer} ${fabOpen ? styles.fabOpen : ""}`} style={{display: "flex", position: "sticky"}}>
         <div className={styles.fabMenu}>
           {FIELD_TYPES.map((ft) => (
             <button

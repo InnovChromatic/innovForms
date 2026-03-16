@@ -7,6 +7,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -72,7 +73,7 @@ export default function RegisterPage() {
   return (
     <>
       <div className={styles.authHeader}>
-        <div className={styles.authLogo}>IF</div>
+        <Image src="/title_logo.jpg" alt="InnovForms Logo" width={80} height={80} style={{ borderRadius: "var(--radius-md)", objectFit: "cover", marginBottom: "var(--space-md)" }} />
         <h1>Create Account</h1>
         <p>Join InnovForms to start building forms</p>
       </div>

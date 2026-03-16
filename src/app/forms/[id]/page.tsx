@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 import FormRenderer from "@/components/forms/FormRenderer";
 import type { FormSchema, FormSettings } from "@/types";
 
@@ -121,21 +122,7 @@ export default async function PublicFormPage({ params }: { params: Promise<{ id:
         margin: "0 auto var(--space-xl)",
         textAlign: "center",
       }}>
-        <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 40,
-          height: 40,
-          borderRadius: "var(--radius-lg)",
-          background: "var(--accent-gradient)",
-          color: "white",
-          fontWeight: 800,
-          fontSize: "var(--text-sm)",
-          marginBottom: "var(--space-md)",
-        }}>
-          IF
-        </div>
+        <Image src="/title_logo.jpg" alt="InnovForms Logo" width={48} height={48} style={{ borderRadius: "var(--radius-lg)", objectFit: "cover", marginBottom: "var(--space-md)" }} />
         <h1 style={{ fontSize: "var(--text-2xl)", marginBottom: "var(--space-xs)" }}>{form.title}</h1>
         {form.description && (
           <p style={{ color: "var(--text-tertiary)", fontSize: "var(--text-sm)" }}>{form.description}</p>

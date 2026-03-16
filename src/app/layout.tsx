@@ -16,9 +16,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "InnovForms — Smart Form Management",
+  title: "InnovForms — By InnovChromatic",
   description:
     "Build, manage, and analyze forms with InnovForms. A modern forms management platform for teams.",
+  icons: {
+    icon: "/title_logo.jpg"
+  }
 };
 
 export default function RootLayout({

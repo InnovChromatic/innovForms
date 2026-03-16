@@ -81,7 +81,14 @@ export default function FormRenderer({ schema, settings, formId, initialData, on
     if (!validateStep()) return;
     setSubmitting(true);
     try {
-      await onSubmit(formData);
+      /* Strip internal upload metadata keys before submitting */
+      const cleanData: Record<string, unknown> = {};
+      for (const [key, val] of Object.entries(formData)) {
+        if (!key.startsWith("_uploading_") && !key.startsWith("_uploadError_") && !key.startsWith("_fileName_")) {
+          cleanData[key] = val;
+        }
+      }
+      await onSubmit(cleanData);
       setSubmitted(true);
     } catch {
       setErrors({ _form: "Failed to submit. Please try again." });
@@ -202,22 +209,97 @@ export default function FormRenderer({ schema, settings, formId, initialData, on
           </div>
         )}
 
-        {/* File */}
-        {field.type === "file" && (
-          <div className={styles.fileInput} onClick={() => document.getElementById(`file-${field.id}`)?.click()}>
-            <FontAwesomeIcon icon={faCloudArrowUp} style={{ fontSize: "1.5rem", color: "var(--accent-primary)", marginBottom: 4 }} />
-            <div className={styles.fileInputText}>
-              {value ? String(value) : "Click to upload a file"}
+        {/* File — uploads immediately to Supabase Storage */}
+        {field.type === "file" && (() => {
+          const fileUrl = value as string | undefined;
+          const isUploading = formData[`_uploading_${field.id}`] as boolean;
+          const uploadError = formData[`_uploadError_${field.id}`] as string | undefined;
+          const fileName = formData[`_fileName_${field.id}`] as string | undefined;
+
+          const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            /* Mark as uploading */
+            setFormData(prev => ({
+              ...prev,
+              [`_uploading_${field.id}`]: true,
+              [`_uploadError_${field.id}`]: undefined,
+              [`_fileName_${field.id}`]: file.name,
+            }));
+
+            try {
+              const body = new FormData();
+              body.append("file", file);
+              body.append("formId", formId);
+
+              const res = await fetch("/api/upload", { method: "POST", body });
+              const json = await res.json();
+
+              if (!res.ok) {
+                throw new Error(json.error || "Upload failed");
+              }
+
+              /* Store the public URL as the field value */
+              setFormData(prev => ({
+                ...prev,
+                [field.id]: json.url,
+                [`_uploading_${field.id}`]: false,
+                [`_fileName_${field.id}`]: file.name,
+              }));
+              setErrors(prev => { const n = { ...prev }; delete n[field.id]; return n; });
+            } catch (err: unknown) {
+              const msg = err instanceof Error ? err.message : "Upload failed";
+              setFormData(prev => ({
+                ...prev,
+                [`_uploading_${field.id}`]: false,
+                [`_uploadError_${field.id}`]: msg,
+              }));
+            }
+          };
+
+          return (
+            <div
+              className={styles.fileInput}
+              onClick={() => !isUploading && document.getElementById(`file-${field.id}`)?.click()}
+              style={{ cursor: isUploading ? "wait" : "pointer" }}
+            >
+              {isUploading ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} spin style={{ fontSize: "1.5rem", color: "var(--accent-primary)", marginBottom: 4 }} />
+                  <div className={styles.fileInputText}>Uploading {fileName}...</div>
+                </>
+              ) : fileUrl ? (
+                <>
+                  <FontAwesomeIcon icon={faCircleCheck} style={{ fontSize: "1.5rem", color: "var(--color-success)", marginBottom: 4 }} />
+                  <div className={styles.fileInputText} style={{ color: "var(--color-success)", fontWeight: 600 }}>
+                    {fileName || "File uploaded"}
+                  </div>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)", marginTop: 4, wordBreak: "break-all" }}>
+                    <a href={fileUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-primary)" }}>
+                      View uploaded file
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faCloudArrowUp} style={{ fontSize: "1.5rem", color: "var(--accent-primary)", marginBottom: 4 }} />
+                  <div className={styles.fileInputText}>Click to upload a file</div>
+                </>
+              )}
+              {uploadError && (
+                <div style={{ fontSize: "var(--text-xs)", color: "var(--color-error)", marginTop: 4 }}>{uploadError}</div>
+              )}
+              <input
+                id={`file-${field.id}`}
+                type="file"
+                style={{ display: "none" }}
+                accept={(field.properties?.allowedMimeTypes as string) || undefined}
+                onChange={handleFileChange}
+              />
             </div>
-            <input
-              id={`file-${field.id}`}
-              type="file"
-              style={{ display: "none" }}
-              accept={(field.properties?.allowedMimeTypes as string) || undefined}
-              onChange={(e) => updateValue(field.id, e.target.files?.[0]?.name || "")}
-            />
-          </div>
-        )}
+          );
+        })()}
 
         {/* Helper text */}
         {field.helperText && <div className={styles.fieldHelper}>{field.helperText}</div>}
