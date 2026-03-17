@@ -13,6 +13,7 @@ import {
   faClock,
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
+import ParsedText from "@/components/ui/ParsedText";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -160,7 +161,7 @@ export default async function DashboardPage() {
                   </div>
                   {form.description && (
                      <div className="truncate-text" style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>
-                      {form.description}
+                      <ParsedText text={form.description} />
                     </div>
                   )}
                 </Link>

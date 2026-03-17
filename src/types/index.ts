@@ -121,6 +121,7 @@ export interface FormSettings {
   successMessage?: string;     // Custom success message
   redirectUrl?: string;        // URL to redirect after success
   limitOnePerUser: boolean;    // One submission per user
+  attachedFileUrl?: string;    // URL of an attached document file
 }
 
 /* =============================================================================

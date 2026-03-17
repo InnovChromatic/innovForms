@@ -319,7 +319,7 @@ export default function FormRenderer({ schema, settings, formId, initialData, on
             <FontAwesomeIcon icon={faCircleCheck} />
           </div>
           <h2>Thank You!</h2>
-          <p>Your response has been submitted successfully.</p>
+          <p>{settings.successMessage || "Your response has been submitted successfully."}</p>
         </div>
       </div>
     );

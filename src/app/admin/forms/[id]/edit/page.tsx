@@ -16,6 +16,7 @@ import {
   faPlus, faTrash, faChevronUp, faChevronDown, faLink, faSpinner,
   faFont, faEnvelope, faPhone, faAlignLeft, faCaretDown,
   faCircleDot, faSquareCheck, faPaperclip, faCalendarDays, faStar, faHashtag,
+  faCircleCheck, faCloudArrowUp
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "../../../admin.module.css";
 
@@ -47,6 +48,9 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const router = useRouter();
 
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [attachmentError, setAttachmentError] = useState("");
+
   /* Load form data */
   useEffect(() => {
     const load = async () => {
@@ -62,6 +66,32 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
     };
     load();
   }, [id]);
+
+  /* Handle Attach Document Upload */
+  const handleAttachmentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAttachment(true);
+    setAttachmentError("");
+
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      body.append("formId", typeof id === "string" ? id : "admin"); // admin uploads
+
+      const res = await fetch("/api/upload", { method: "POST", body });
+      const json = await res.json();
+
+      if (!res.ok) throw new Error(json.error || "Upload failed");
+
+      setSettings({ ...settings, attachedFileUrl: json.url });
+    } catch (err: unknown) {
+      setAttachmentError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingAttachment(false);
+    }
+  };
 
   const addField = (sectionIndex: number, type: FieldType) => {
     const newField: FormField = { id: uuidv4(), type, label: `New ${type} field`, placeholder: "", required: false };
@@ -239,7 +269,7 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
         {/* Form Settings */}
         <div className={styles.builderCanvas}>
           <h3 style={{ fontSize: "var(--text-lg)", marginBottom: "var(--space-md)" }}>Form Settings</h3>
-          <div className="grid-2 gap-md">
+          <div className="grid-2 gap-md" style={{ marginBottom: "var(--space-lg)" }}>
             <div className={styles.toggleWrap} style={{ padding: "var(--space-sm)", background: "var(--color-gray-50)", borderRadius: "var(--radius-md)" }}>
               <span className={styles.toggleLabel} style={{ fontWeight: 600, color: "var(--text-primary)" }}>Multi-Step Form</span>
               <button className={`${styles.toggle} ${settings.multiStep ? styles.active : ""}`} onClick={() => setSettings({ ...settings, multiStep: !settings.multiStep })} />
@@ -259,6 +289,81 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
             <div className={styles.toggleWrap} style={{ padding: "var(--space-sm)", background: "var(--color-gray-50)", borderRadius: "var(--radius-md)" }}>
               <span className={styles.toggleLabel} style={{ fontWeight: 600, color: "var(--text-primary)" }}>Limit to 1 Response Per User</span>
               <button type="button" className={`${styles.toggle} ${settings.limitOnePerUser ? styles.active : ""}`} onClick={() => setSettings({ ...settings, limitOnePerUser: !settings.limitOnePerUser })} />
+            </div>
+          </div>
+
+          <div style={{ borderTop: "1px solid var(--border-light)", paddingTop: "var(--space-md)", marginBottom: "var(--space-md)" }}>
+            <div className="input-group">
+              <label className="input-label">Success Message</label>
+              <textarea 
+                className="input-field textarea-field" 
+                placeholder="Your response has been submitted successfully."
+                value={settings.successMessage || ""} 
+                onChange={(e) => setSettings({ ...settings, successMessage: e.target.value })} 
+                rows={2} 
+              />
+              <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)", marginTop: "4px" }}>Message shown to users immediately after they submit the form.</p>
+            </div>
+          </div>
+
+          <div style={{ borderTop: "1px solid var(--border-light)", paddingTop: "var(--space-md)" }}>
+            <label className="input-label mb-sm">Attach Document (Optional)</label>
+            <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)", marginBottom: "var(--space-md)" }}>
+              Upload a PDF, document, or file that respondents should view before filling out this form.
+            </p>
+            
+            <div
+              className={styles.fileInput}
+              onClick={() => !uploadingAttachment && document.getElementById("form-attachment-upload")?.click()}
+              style={{ cursor: uploadingAttachment ? "wait" : "pointer" }}
+            >
+              {uploadingAttachment ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} spin style={{ fontSize: "1.5rem", color: "var(--accent-primary)", marginBottom: 4 }} />
+                  <div className={styles.fileInputText}>Uploading...</div>
+                </>
+              ) : settings.attachedFileUrl ? (
+                <>
+                  <FontAwesomeIcon icon={faCircleCheck} style={{ fontSize: "1.5rem", color: "var(--color-success)", marginBottom: 4 }} />
+                  <div className={styles.fileInputText} style={{ color: "var(--color-success)", fontWeight: 600 }}>
+                    Document Attached
+                  </div>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)", marginTop: 4 }}>
+                    <a 
+                      href={settings.attachedFileUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      style={{ color: "var(--accent-primary)" }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      View attached file
+                    </a>
+                    {" • "}
+                    <button 
+                      type="button" 
+                      className="btn-link" 
+                      style={{ color: "var(--color-error)", padding: 0 }}
+                      onClick={(e) => { e.stopPropagation(); setSettings({ ...settings, attachedFileUrl: undefined }); }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faCloudArrowUp} style={{ fontSize: "1.5rem", color: "var(--accent-primary)", marginBottom: 4 }} />
+                  <div className={styles.fileInputText}>Click to upload an attachment</div>
+                </>
+              )}
+              {attachmentError && (
+                <div style={{ fontSize: "var(--text-xs)", color: "var(--color-error)", marginTop: 4 }}>{attachmentError}</div>
+              )}
+              <input
+                id="form-attachment-upload"
+                type="file"
+                style={{ display: "none" }}
+                onChange={handleAttachmentUpload}
+              />
             </div>
           </div>
         </div>

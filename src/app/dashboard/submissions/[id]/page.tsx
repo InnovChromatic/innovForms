@@ -15,8 +15,10 @@ import {
   faClock,
   faCircleInfo,
   faEdit,
+  faPaperclip
 } from "@fortawesome/free-solid-svg-icons";
 import type { FormSchema, FormSettings } from "@/types";
+import ParsedText from "@/components/ui/ParsedText";
 
 /**
  * Renders a submission value properly, handling arrays, objects, and primitives.
@@ -37,14 +39,14 @@ export default async function SubmissionDetailPage({ params }: { params: Promise
 
   const { data: submission } = await adminSupabase
     .from("submissions")
-    .select("*, forms ( title, schema, settings )")
+    .select("*, forms ( title, description, schema, settings )")
     .eq("id", id)
     .eq("user_id", user?.id || "")
     .single();
 
   if (!submission) notFound();
 
-  const formData = submission.forms as unknown as { title: string; schema: FormSchema; settings: FormSettings } | null;
+  const formData = submission.forms as unknown as { title: string; description?: string; schema: FormSchema; settings: FormSettings } | null;
   const submissionData = (submission.data as Record<string, unknown>) || {};
   const sections = formData?.schema?.sections || [];
 
@@ -65,7 +67,27 @@ export default async function SubmissionDetailPage({ params }: { params: Promise
         }}>
           <div>
             <h1 style={{ marginBottom: "var(--space-xs)" }}>Submission Detail</h1>
-            <p>{formData?.title || "Unknown Form"}</p>
+            <p style={{ fontWeight: 600, color: "var(--text-primary)" }}>{formData?.title || "Unknown Form"}</p>
+            {formData?.description && (
+              <p style={{ color: "var(--text-tertiary)", fontSize: "var(--text-sm)", marginTop: "var(--space-xs)" }}>
+                <ParsedText text={formData.description} />
+              </p>
+            )}
+            
+            {formData?.settings?.attachedFileUrl && (
+              <div style={{ marginTop: "var(--space-md)" }}>
+                <a 
+                  href={formData.settings.attachedFileUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary btn-sm"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-sm)" }}
+                >
+                  <FontAwesomeIcon icon={faPaperclip} />
+                  View Attached Document
+                </a>
+              </div>
+            )}
           </div>
 
           {formData?.settings?.allowEdit && (

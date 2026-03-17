@@ -8,10 +8,11 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faPaperclip } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import FormRenderer from "@/components/forms/FormRenderer";
 import type { FormSchema, FormSettings } from "@/types";
+import ParsedText from "@/components/ui/ParsedText";
 
 export default async function PublicFormPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -63,16 +64,44 @@ export default async function PublicFormPage({ params }: { params: Promise<{ id:
   /* Setting: Limit 1 Response Per User (and Not Editable) */
   if (existingSubmission && settings.limitOnePerUser && !settings.allowEdit) {
     return (
-      <div className="page-loader" style={{ minHeight: "100vh", background: "var(--bg-body)" }}>
-         <div className="card" style={{ maxWidth: 400, textAlign: "center", padding: "var(--space-2xl)" }}>
-          <FontAwesomeIcon icon={faInfoCircle} style={{ fontSize: "3rem", color: "var(--color-warning)", marginBottom: "var(--space-md)" }} />
-          <h2 style={{ fontSize: "var(--text-xl)", marginBottom: "var(--space-md)" }}>Already Submitted</h2>
-          <p style={{ color: "var(--text-secondary)", marginBottom: "var(--space-lg)" }}>
-            You have already submitted a response for this form and multiple responses are not allowed.
-          </p>
-          <Link href="/dashboard" className="btn btn-primary" style={{ width: "100%" }}>
-            Go to Dashboard
-          </Link>
+      <div style={{ minHeight: "100vh", background: "var(--bg-body)", padding: "var(--space-2xl) var(--space-lg)" }}>
+        {/* Form Header */}
+        <div style={{ maxWidth: "var(--form-max-width)", margin: "0 auto var(--space-xl)", textAlign: "center" }}>
+          <Image src="/title_logo.jpg" alt="InnovForms Logo" width={48} height={48} style={{ borderRadius: "var(--radius-lg)", objectFit: "cover", marginBottom: "var(--space-md)" }} />
+          <h1 style={{ fontSize: "var(--text-2xl)", marginBottom: "var(--space-xs)" }}>{form.title}</h1>
+          {form.description && (
+            <p style={{ color: "var(--text-tertiary)", fontSize: "var(--text-sm)" }}>
+              <ParsedText text={form.description} />
+            </p>
+          )}
+          
+          {settings.attachedFileUrl && (
+            <div style={{ marginTop: "var(--space-md)", display: "inline-block" }}>
+              <a 
+                href={settings.attachedFileUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn btn-secondary btn-sm"
+                style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-sm)" }}
+              >
+                <FontAwesomeIcon icon={faPaperclip} />
+                View Attached Document
+              </a>
+            </div>
+          )}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div className="card" style={{ maxWidth: 400, width: "100%", textAlign: "center", padding: "var(--space-2xl)" }}>
+            <FontAwesomeIcon icon={faInfoCircle} style={{ fontSize: "3rem", color: "var(--color-warning)", marginBottom: "var(--space-md)" }} />
+            <h2 style={{ fontSize: "var(--text-xl)", marginBottom: "var(--space-md)" }}>Already Submitted</h2>
+            <p style={{ color: "var(--text-secondary)", marginBottom: "var(--space-lg)" }}>
+              You have already submitted a response for this form and multiple responses are not allowed.
+            </p>
+            <Link href="/dashboard" className="btn btn-primary" style={{ width: "100%" }}>
+              Go to Dashboard
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -125,7 +154,24 @@ export default async function PublicFormPage({ params }: { params: Promise<{ id:
         <Image src="/title_logo.jpg" alt="InnovForms Logo" width={48} height={48} style={{ borderRadius: "var(--radius-lg)", objectFit: "cover", marginBottom: "var(--space-md)" }} />
         <h1 style={{ fontSize: "var(--text-2xl)", marginBottom: "var(--space-xs)" }}>{form.title}</h1>
         {form.description && (
-          <p style={{ color: "var(--text-tertiary)", fontSize: "var(--text-sm)" }}>{form.description}</p>
+          <p style={{ color: "var(--text-tertiary)", fontSize: "var(--text-sm)" }}>
+            <ParsedText text={form.description} />
+          </p>
+        )}
+        
+        {settings.attachedFileUrl && (
+          <div style={{ marginTop: "var(--space-md)", display: "inline-block" }}>
+            <a 
+              href={settings.attachedFileUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn btn-secondary btn-sm"
+              style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-sm)" }}
+            >
+              <FontAwesomeIcon icon={faPaperclip} />
+              View Attached Document
+            </a>
+          </div>
         )}
         
         {existingSubmission && settings.allowEdit && (
